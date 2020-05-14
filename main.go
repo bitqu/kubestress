@@ -1,4 +1,4 @@
-package kubestress
+package main
 
 import (
   "context"
