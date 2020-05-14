@@ -8,7 +8,7 @@ RUN export GO111MODULE=on && \
     go mod init bitqubic.com/kubestress
 
 RUN go get k8s.io/client-go@master
-RUN go build -o kubestress .
+RUN go build -o kubestress . && chmod 755 ./kubestress
 
 FROM alpine
 RUN apk add --no-cache stress-ng

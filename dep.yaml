@@ -16,17 +16,17 @@ spec:
     spec:
       containers:
       - name: kube-stress
-        image: gcr.io/oceanex-stage/kube-stress:latest
+        image: bitqu/kubestress:latest
         imagePullPolicy: Always
         command: [ "sh", "-c"]
         args:
-        - "./main"
+        - "./kubestress"
         env:
-          - name: DEPLOYMENT_NAME
-            value: kube-stress
-          - name: TOTAL_CPU_PERCENT
-            value: 100
-          - name: PER_POD_PROCESS
-            value: 2
-          - name: TEST_PERIOD_SECOND
-            value: 10
+        - name: DEPLOYMENT_NAME
+          value: kube-stress
+        - name: TOTAL_CPU_PERCENT
+          value: "100"
+        - name: PER_POD_PROCESS
+          value: "2"
+        - name: TEST_PERIOD_SECOND
+          value: "10"
