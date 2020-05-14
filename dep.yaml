@@ -18,15 +18,22 @@ spec:
       - name: kube-stress
         image: bitqu/kubestress:latest
         imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "200m"
+          limits:
+            cpu: "200m"
         command: [ "sh", "-c"]
         args:
         - "./kubestress"
         env:
         - name: DEPLOYMENT_NAME
           value: kube-stress
-        - name: TOTAL_CPU_PERCENT
-          value: "100"
+        - name: TOTAL_CPU_LOAD
+          value: "1000"
         - name: PER_POD_PROCESS
-          value: "2"
+          value: "1"
+        - name: PER_POD_CPU_LIMIT
+          value: "200"
         - name: TEST_PERIOD_SECOND
           value: "10"

@@ -33,20 +33,27 @@ func main() {
     }
     numReplicas := int(*(result.Spec.Replicas))
 
+    testPeriodSecond, err := strconv.Atoi(os.Getenv("TEST_PERIOD_SECOND"))
     // pod parameters for stress test
     perPodProcess, err := strconv.Atoi(os.Getenv("PER_POD_PROCESS"))
-    totalCpuLoad, err := strconv.Atoi(os.Getenv("TOTAL_CPU_PERCENT"))
-    testPeriodSecond, err := strconv.Atoi(os.Getenv("TEST_PERIOD_SECOND"))
+    totalCpuLoad, err := strconv.Atoi(os.Getenv("TOTAL_CPU_LOAD"))
+    
+    perPodCpuLimit, err := strconv.Atoi(os.Getenv("PER_POD_CPU_LIMIT"))    
     perPodCpuLoad := totalCpuLoad / numReplicas
-    perProcessCpuLoad := perPodCpuLoad / perPodProcess
+    
+    perProcessCpuLoadPercent := 100 * perPodCpuLoad / perPodProcess / perPodCpuLimit
+    if(perProcessCpuLoadPercent > 100) {
+      // only set per-process CPU load to less than 100 CPU limit is plenty
+      perProcessCpuLoadPercent = 100
+    }
 
-    fmt.Printf("Total CPU load [%v]m. Total replicas [%v]. Per-pod CPU load [%v]. Per-process load [%v].\n",
-      totalCpuLoad, numReplicas, perPodCpuLoad, perProcessCpuLoad)
+    fmt.Printf("Total CPU load [%v]m. Total replicas [%v]. Per-pod CPU load [%v]m. Per-pod processes [%v]. Per-process load [%v] percent.\n",
+      totalCpuLoad, numReplicas, perPodCpuLoad, perPodProcess, perProcessCpuLoadPercent)
     
     // run stress test
     out, err := exec.Command("/usr/bin/stress-ng",
       "--cpu=" + strconv.Itoa(perPodProcess),
-      "--cpu-load=" + strconv.Itoa(perProcessCpuLoad),
+      "--cpu-load=" + strconv.Itoa(perProcessCpuLoadPercent),
       "--timeout="+ strconv.Itoa(testPeriodSecond) +"s").CombinedOutput()
 
     if err != nil {
